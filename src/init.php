@@ -7,7 +7,6 @@ if (! defined('LARAVEL_START')) {
 use App\Core\Admin\PaymentGatewayCore;
 use App\Http\Requests\Admin\UpdatePaymentGatewayRequest;
 use App\Models\PaymentGateway;
-use App\Repositories\PluginRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
@@ -25,14 +24,14 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
     }
 
     // Gateways
-    PluginRepository::singleton()->addAction(
+    pluginRepository()->addAction(
         hookName: 'payment_gateways',
         callback: 'WK_ZIBAL_PAYMENT_GATEWAY_INIT',
     );
 
     if (request()->routeIs('admin.payment-gateways.edit')) {
         // Custom Fields
-        PluginRepository::singleton()->addAction(
+        pluginRepository()->addAction(
             hookName: 'pg[zibal]__custom_edit_form_fields_view',
             callback: function (PaymentGateway $paymentGateway) use ($plugin) {
                 return plugin_view($plugin->name, 'src.views.custom-edit-form-fields', compact('paymentGateway'))->render();
@@ -40,7 +39,7 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
         );
 
         // Validation Rules
-        PluginRepository::singleton()->addAction(
+        pluginRepository()->addAction(
             hookName: 'pg[zibal]__validation_rules',
             callback: function (Request $request) {
                 return [
@@ -51,7 +50,7 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
         );
 
         // The update method
-        PluginRepository::singleton()->addAction(
+        pluginRepository()->addAction(
             hookName: 'pg[zibal]__update',
             callback: function (UpdatePaymentGatewayRequest $request, PaymentGateway $paymentGateway, PaymentGatewayCore $core) {
                 return DB::transaction(function () use ($request, $paymentGateway, $core) {
