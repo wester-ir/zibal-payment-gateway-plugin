@@ -84,6 +84,11 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
      */
     public function create(int $orderId, int $amount, string $description, string $callbackUrl): void
     {
+        // Convert to Rials
+        if (productCurrency()->value === 'IRT') {
+            $amount = $amount * 10;
+        }
+
         [$response, $responseStatus] = $this->sendRequest('request', [
             'merchant'    => $this->model->data['merchant'],
             'amount'      => $amount,
