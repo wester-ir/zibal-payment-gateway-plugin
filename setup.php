@@ -18,7 +18,6 @@ class PluginSetup extends BasePluginSetup
             PaymentGateway::create([
                 'id'         => self::ID,
                 'title'      => 'زیبال',
-                'currency'   => CurrencyEnum::IranianRial,
                 'logo_path'  => $this->plugin->name,
                 'logo_name'  => 'logo.png',
                 'logo_disk'  => 'plugin',
