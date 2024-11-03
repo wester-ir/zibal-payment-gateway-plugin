@@ -31,12 +31,6 @@ class PluginSetup extends BasePluginSetup
         }
     }
 
-    public function upgrade(): void
-    {}
-
-    public function downgrade(): void
-    {}
-
     public function activate(): void
     {
         $this->query()->update([
