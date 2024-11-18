@@ -32,7 +32,7 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
     if (request()->routeIs('admin.payment-gateways.edit')) {
         // Custom Fields
         pluginRepository()->addAction(
-            hookName: 'pg[zibal]__custom_edit_form_fields_view',
+            hookName: 'pg[zibal]__edit_form_view',
             callback: function (PaymentGateway $paymentGateway) use ($plugin) {
                 return plugin_view($plugin->name, 'src.views.custom-edit-form-fields', compact('paymentGateway'))->render();
             },
