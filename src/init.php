@@ -24,23 +24,23 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
     }
 
     // Gateways
-    pluginRepository()->addAction(
-        hookName: 'payment_gateways',
+    register_plugin_action(
+        hook: 'payment_gateways',
         callback: 'WK_ZIBAL_PAYMENT_GATEWAY_INIT',
     );
 
     if (request()->routeIs('admin.payment-gateways.edit')) {
         // Custom Fields
-        pluginRepository()->addAction(
-            hookName: 'pg[zibal]__edit_form_view',
+        register_plugin_action(
+            hook: 'pg[zibal]__edit_form_view',
             callback: function (PaymentGateway $paymentGateway) use ($plugin) {
                 return plugin_view($plugin->name, 'src.views.edit-form-fields', compact('paymentGateway'))->render();
             },
         );
 
         // Validation Rules
-        pluginRepository()->addAction(
-            hookName: 'pg[zibal]__validation_rules',
+        register_plugin_action(
+            hook: 'pg[zibal]__validation_rules',
             callback: function (Request $request) {
                 return [
                     'merchant' => ['required', 'string'],
@@ -50,8 +50,8 @@ if (! class_exists('WK_ZIBAL_PAYMENT_GATEWAY') && ! function_exists('WK_ZIBAL_PA
         );
 
         // The update method
-        pluginRepository()->addAction(
-            hookName: 'pg[zibal]__update',
+        register_plugin_action(
+            hook: 'pg[zibal]__update',
             callback: function (UpdatePaymentGatewayRequest $request, PaymentGateway $paymentGateway, PaymentGatewayCore $core) {
                 return DB::transaction(function () use ($request, $paymentGateway, $core) {
                     $core->prefill($request, $paymentGateway)->fill([
