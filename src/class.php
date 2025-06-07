@@ -125,10 +125,10 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
      * Verify parameters.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
+     * @param  mixed  $orderId
      * @return bool
      */
-    public function verifyParameters(Request $request, Order $order): bool
+    public function verifyParameters(Request $request, mixed $orderId): bool
     {
         return $request->has(['success', 'trackId', 'status', 'orderId']) && $order->id == $this->getOrderId($request);
     }
