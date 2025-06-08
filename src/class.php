@@ -130,7 +130,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
      */
     public function verifyParameters(Request $request, mixed $orderId): bool
     {
-        return $request->has(['success', 'trackId', 'status', 'orderId']) && $order->id == $this->getOrderId($request);
+        return $request->has(['success', 'trackId', 'status', 'orderId']) && $orderId == $this->getOrderId($request);
     }
 
     /**
