@@ -4,9 +4,8 @@ if (! defined('LARAVEL_START')) {
     exit(0);
 }
 
-use App\Models\Order;
 use App\Services\Core\Payment\Exceptions\PaymentCreationException;
-use App\Services\Core\Payment\Exceptions\PaymentCurlException;
+use App\Services\Core\Payment\Exceptions\PaymentGatewayConnectionException;
 use App\Services\Core\Payment\Gateway\Gateway;
 use App\Services\Core\Payment\Gateway\GatewayInterface;
 use Illuminate\Http\Request;
@@ -30,7 +29,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
     /**
      * Send a request.
      *
-     * @throws PaymentCurlException
+     * @throws PaymentGatewayConnectionException
      */
     private function sendRequest(string $endpoint, mixed $data): array
     {
@@ -62,7 +61,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
 
         // Check if there was a cURL error
         if ($errno !== 0) {
-            throw new PaymentCurlException($err);
+            throw new PaymentGatewayConnectionException($err);
         }
 
         // Attempt to decode the response JSON
@@ -75,15 +74,17 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
      * Create a payment request.
      *
      * @param  int  $orderId
-     * @param  int  $amount
+     * @param  int|float|string  $amount
      * @param  string  $description
      * @param  string  $callbackUrl
      * @return void
-     * @throws PaymentCurlException
+     * @throws PaymentGatewayConnectionException
      * @throws PaymentCreationException
      */
-    public function create(int $orderId, int $amount, string $description, string $callbackUrl): void
+    public function create(int $orderId, int|float|string $amount, string $description, string $callbackUrl): void
     {
+        $amount = (int) $amount;
+        
         // Convert to Rials
         if (productCurrency()->value === 'IRT') {
             $amount = $amount * 10;
@@ -124,7 +125,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
     /**
      * Verify parameters.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  mixed  $orderId
      * @return bool
      */
@@ -136,9 +137,9 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
     /**
      * Verify the payment.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
-     * @throws PaymentCurlException
+     * @throws PaymentGatewayConnectionException
      */
     public function verify(Request $request): array
     {
@@ -180,7 +181,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
     /**
      * Get the transaction id.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return string|null
      */
     public function getTransactionUid(Request $request): ?string
@@ -191,7 +192,7 @@ class WK_ZIBAL_PAYMENT_GATEWAY extends Gateway implements GatewayInterface
     /**
      * Get the order id.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return string|null
      */
     public function getOrderId(Request $request): ?string
